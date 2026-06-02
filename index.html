@@ -556,6 +556,11 @@ function renderFiiCards(){
         <div class="stat"><div class="l">Part.</div><div class="v">${pct(x.part)}</div></div>
         <div class="stat"><div class="l">Teto</div><div class="v">R$ ${money(x.teto)}</div></div>
       </div>
+      <div class="stats2">
+        <div class="stat"><div class="l">PM</div><div class="v">R$ ${money(x.pm)}</div></div>
+        <div class="stat"><div class="l">Qtd</div><div class="v">${x.qtd.toLocaleString("pt-BR")}</div></div>
+        <div class="stat"><div class="l">Valor</div><div class="v">${fmt(x.valor)}</div></div>
+      </div>
       <div class="tetobar"><i style="width:${tetoPct}%;background:${barCol}"></i></div>
     </div>`;
   }).join("");
