@@ -741,9 +741,13 @@ function renderAportes(d){
       const semAtNote=semAt>0?`<div style="font-size:11.5px;color:#92400E;background:#FEF3C7;border:1px solid #FDE68A;border-radius:6px;padding:8px 11px;margin-top:10px"><b>${fmt(semAt)}</b> registrado neste mês sem ativo — entra no total, mas não nas linhas por ativo. Para aparecer aqui em baixo, edite o aporte e informe o ticker.</div>`:'';
       const mesTag=r.past?` <span class="tag" style="background:#F1F3F7;color:var(--muted)">${r.mi<curMi?'passado':'este mês'}</span>`:'';
       const rowStyle=r.past?'cursor:pointer;background:#FAFBFC':'cursor:pointer';
-      const tdAc=r.past?'<td style="color:var(--muted)">—</td>':`<td>${fmt(P.mAcoes)}</td>`;
-      const tdFi=r.past?'<td style="color:var(--muted)">—</td>':`<td>${fmt(P.mFiis)}</td>`;
-      const tdTot=r.past?'<td style="color:var(--muted)">—</td>':`<td style="font-weight:600">${fmt(P.mensal)}</td>`;
+      const isCurMon=!r.past&&r.mi===curMi;
+      const curAc=isCurMon?regList.filter(x=>x.mesIdx===r.mi&&x.classe==="Ações").reduce((s,x)=>s+x.valor,0):P.mAcoes;
+      const curFi=isCurMon?regList.filter(x=>x.mesIdx===r.mi&&x.classe==="FIIs").reduce((s,x)=>s+x.valor,0):P.mFiis;
+      const curTot=isCurMon?curAc+curFi:P.mensal;
+      const tdAc=r.past?'<td style="color:var(--muted)">—</td>':`<td>${fmt(isCurMon?curAc:P.mAcoes)}</td>`;
+      const tdFi=r.past?'<td style="color:var(--muted)">—</td>':`<td>${fmt(isCurMon?curFi:P.mFiis)}</td>`;
+      const tdTot=r.past?'<td style="color:var(--muted)">—</td>':`<td style="font-weight:600">${fmt(isCurMon?curTot:P.mensal)}</td>`;
       const tdPat=r.past?'<td style="color:var(--muted)">—</td>':`<td>${fmt(r.pat)}</td>`;
       body+=`<tr class="apo-row" data-mi="${r.mi}" style="${rowStyle}">
         <td><span class="apo-caret">▸</span></td>
