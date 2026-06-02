@@ -742,18 +742,18 @@ function renderAportes(d){
       </tr>
       <tr class="apo-detail" data-mi="${r.mi}" style="display:none">
         <td colspan="7" style="background:#F9FAFB;padding:14px 18px">
-          <div style="font-size:10.5px;color:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;border-left:3px solid ${colVar('var(--acoes)')};padding-left:8px">Ações ${r.past?'— histórico':'— alvo '+fmt(P.mAcoes)+'/mês'}</div>
+          <div style="font-size:10.5px;color:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;border-left:3px solid ${colVar('var(--acoes)')};padding-left:8px">Ações ${(r.past&&r.mi!==curMi)?'— histórico':'— alvo '+fmt(P.mAcoes)+'/mês'}</div>
           <table style="margin-bottom:14px">
             <thead><tr><th>Ativo</th><th>Setor</th><th>M.S.</th><th>Planejado</th><th>Já aportei</th><th>Falta</th></tr></thead>
-            <tbody>${detailRows(perAcao,r.mi,r.past)}</tbody>
+            <tbody>${detailRows(perAcao,r.mi,r.past&&r.mi!==curMi)}</tbody>
           </table>
-          <div style="font-size:10.5px;color:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:6px 0 8px;border-left:3px solid ${colVar('var(--fiis)')};padding-left:8px">FIIs ${r.past?'— histórico':'— alvo '+fmt(P.mFiis)+'/mês'}</div>
+          <div style="font-size:10.5px;color:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:6px 0 8px;border-left:3px solid ${colVar('var(--fiis)')};padding-left:8px">FIIs ${(r.past&&r.mi!==curMi)?'— histórico':'— alvo '+fmt(P.mFiis)+'/mês'}</div>
           <table>
             <thead><tr><th>Ativo</th><th>Setor</th><th>M.S.</th><th>Planejado</th><th>Já aportei</th><th>Falta</th></tr></thead>
-            <tbody>${detailRows(perFii,r.mi,r.past)}</tbody>
+            <tbody>${detailRows(perFii,r.mi,r.past&&r.mi!==curMi)}</tbody>
           </table>
           ${semAtNote}
-          <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">"Já aportei" vem do registro <b>Meus Aportes</b> acima — só aparece por ativo quando o ticker está preenchido. ${r.past?'':'Use a coluna <b>Falta</b> como meta do mês.'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">"Já aportei" vem do registro <b>Meus Aportes</b> acima — só aparece por ativo quando o ticker está preenchido. ${r.past&&r.mi!==curMi?'':'Use a coluna <b>Falta</b> como meta do mês.'}</div>
         </td>
       </tr>`;
     });
