@@ -238,13 +238,7 @@
     </div>
     <!-- Programação mensal — agora logo após Meus Aportes, expansível por mês -->
     <div class="card" style="overflow-x:auto;margin-bottom:16px"><div class="panel-h">Programação mensal <span class="hint">clique no mês para ver aportes por ativo · planejado vs já feito</span></div><table id="aporteTable"></table></div>
-    <!-- Onde aportar — ranking por ativo -->
-    <div class="sec-title">Onde aportar — ranking por ativo <span style="font-weight:500;color:var(--muted);font-size:12px">proporcional à Margem de Segurança</span></div>
-    <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="card"><div class="panel-h">Ações <span class="hint" id="aporteAcaoTot"></span></div><div id="aporteAcaoRank"></div></div>
-      <div class="card"><div class="panel-h">FIIs <span class="hint" id="aporteFiiTot"></span></div><div id="aporteFiiRank"></div></div>
-    </div>
-    <p class="note" style="margin-bottom:22px">Plano forward-looking calculado ao vivo da planilha (gap até a meta, regra de Margem de Segurança). Não é histórico de transações nem recomendação de investimento.</p>
+    
     <div style="border-top:1px solid var(--line);margin-bottom:18px"></div>
     <!-- 7. Aportes realizados -->
     <div class="sec-title" style="margin-top:4px">Aportes realizados <span style="font-weight:500;color:var(--muted);font-size:12px" id="realPeriodo"></span></div>
@@ -263,7 +257,6 @@
     <div class="card" style="margin-bottom:16px"><div class="panel-h">Progresso de Aportes 2026 <span class="hint">realizado vs plano do ano</span></div><div id="metaAporteProg"></div><div id="metaAporteMensal" style="margin-top:14px"></div></div>
     <div class="card" style="margin-bottom:16px"><div class="panel-h">Trajetória até R$150 mil <span class="hint">aportes mensais · mercado estável</span></div><div class="chart-box tall"><canvas id="metaProj"></canvas></div></div>
     <div class="card" style="margin-bottom:16px"><div class="panel-h">Aporte mensal por classe <span class="hint">só Ações + FIIs</span></div><div id="metaSplit"></div></div>
-    <div class="card" style="margin-bottom:16px"><div class="panel-h">Onde aportar — valor exato por ativo <span class="hint">proporcional à Margem de Segurança</span></div><div id="metaPref" style="overflow-x:auto"></div></div>
     <div class="card" style="overflow-x:auto"><div class="panel-h">Programação mês a mês</div><table id="metaTable"></table></div>
   </section>
 
@@ -682,16 +675,6 @@ function renderAportes(d){
     {label:"Em FIIs /mês",value:fmt(P.mFiis),sub:pct(P.gap?100*P.gFiis/P.gap:0)+" do aporte",color:"var(--fiis)"},
   ];
   document.getElementById("aporteKpis").innerHTML=kpis.map(k=>`<div class="card kpi"><div class="label">${k.label}</div><div class="value" style="color:${colVar(k.color)};font-size:17px">${k.value}</div><div class="sub">${k.sub}</div></div>`).join("");
-  const rank=(grid,list,poolTot,color)=>{
-    const ok=list.filter(x=>x.ms>0); const s=ok.reduce((a,x)=>a+x.ms,0)||1;
-    const rows=ok.map(x=>({ativo:x.ativo,setor:x.setor,val:poolTot*x.ms/s})).sort((a,b)=>b.val-a.val);
-    const max=rows.length?rows[0].val:1;
-    document.getElementById(grid).innerHTML=rows.map((r,i)=>`<div style="margin:9px 0"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span><b style="color:var(--label)">${i+1}</b> <span class="tk">${r.ativo}</span> <span class="tag">${r.setor}</span></span><span style="color:var(--muted)">${fmt(r.val)} · ${pct(poolTot?100*r.val/poolTot:0)}</span></div><div class="mini-bar"><i style="width:${Math.round(100*r.val/max)}%;background:${color}"></i></div></div>`).join("")||`<div class="sub" style="color:var(--muted)">Nenhum ativo elegível (M.S. > 0).</div>`;
-  };
-  rank("aporteAcaoRank",d.acoes,P.gAcoes,colVar("var(--acoes)"));
-  rank("aporteFiiRank",d.fiis,P.gFiis,colVar("var(--fiis)"));
-  document.getElementById("aporteAcaoTot").textContent="total "+fmt(P.gAcoes);
-  document.getElementById("aporteFiiTot").textContent="total "+fmt(P.gFiis);
   const aa=document.getElementById("aporteAlvo");
   if(aa){
     const totH=(P.acoesAtual+P.fiisAtual)||1;
@@ -914,9 +897,7 @@ function renderMeta2026(d){
     const s=ok.reduce((a,x)=>a+x.ms,0)||1;
     const body=ok.map(x=>{const m=poolMes*x.ms/s;return `<tr><td class="tk">${x.ativo}</td><td><span class="tag">${x.setor}</span></td><td class="${msClass(x.ms)}">${pct(x.ms)}</td><td>${fmt(m)}</td><td>${fmt(m*months)}</td></tr>`;}).join("");
     return {body,no};};
-  const tbl=(title,r,totMes,totTot)=>`<div style="font-weight:700;font-size:12px;color:var(--muted);margin:2px 0 6px">${title}</div><table style="margin-bottom:14px"><thead><tr><th>Ativo</th><th>Setor</th><th>M.S.</th><th>Aporte/mês</th><th>Total ${months}m</th></tr></thead><tbody>${r.body}${r.no.length?`<tr><td colspan="5" style="color:var(--vermelho);font-size:11.5px;padding-top:6px">Fora — acima do teto: ${r.no.map(x=>x.ativo).join(", ")}</td></tr>`:""}<tr style="font-weight:700;border-top:1px solid var(--line)"><td>Total</td><td></td><td></td><td>${fmt(totMes)}</td><td>${fmt(totTot)}</td></tr></tbody></table>`;
-  document.getElementById("metaPref").innerHTML=tbl("AÇÕES — "+fmt(P.mAcoes)+"/mês",aprows(d.acoes,P.mAcoes),P.mAcoes,P.gAcoes)+tbl("FIIs — "+fmt(P.mFiis)+"/mês",aprows(d.fiis,P.mFiis),P.mFiis,P.gFiis);
-  const startIdx=new Date().getMonth()+1; let proj=P.pat; const rows=[];
+  const tbl=(title,r,totMes,totTot)=>`<div style="font-weight:700;font-size:12px;color:var(--muted);margin:2px 0 6px">${title}</div><table style="margin-bottom:14px"><thead><tr><th>Ativo</th><th>Setor</th><th>M.S.</th><th>Aporte/mês</th><th>Total ${months}m</th></tr></thead><tbody>${r.body}${r.no.length?`<tr><td colspan="5" style="color:var(--vermelho);font-size:11.5px;padding-top:6px">Fora — acima do teto: ${r.no.map(x=>x.ativo).join(", ")}</td></tr>`:""}<tr style="font-weight:700;border-top:1px solid var(--line)"><td>Total</td><td></td><td></td><td>${fmt(totMes)}</td><td>${fmt(totTot)}</td></tr></tbody></table>`;  const startIdx=new Date().getMonth()+1; let proj=P.pat; const rows=[];
   for(let i=0;i<P.monthsLeft;i++){const mi=startIdx+i; if(mi>11)break; proj+=P.mensal; rows.push({mes:MES12[mi],ac:P.mAcoes,fi:P.mFiis,tot:P.mensal,pat:proj});}
   const head=`<thead><tr><th>Mês</th><th>Aporte Ações</th><th>Aporte FIIs</th><th>Total</th><th>Patrimônio projetado</th></tr></thead>`;
   const body=rows.map(r=>`<tr><td>${r.mes}/26</td><td>${fmt(r.ac)}</td><td>${fmt(r.fi)}</td><td>${fmt(r.tot)}</td><td>${fmt(r.pat)}</td></tr>`).join("");
