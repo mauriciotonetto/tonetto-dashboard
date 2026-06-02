@@ -810,14 +810,18 @@ function computePlan(d){
 }
 function renderMeta2026(d){
   const P=computePlan(d), done=P.gap<=0;
+  const acao6=avg6(d.prov,"acao"), fii6=avg6(d.prov,"fii");
   const kpis=[
     {label:"Patrimônio atual",value:fmt(P.pat),sub:"hoje",color:"var(--roxo)"},
     {label:"Meta 2026",value:fmt(P.meta),sub:"até dezembro",color:"var(--ink)"},
     {label:"Falta",value:done?"atingida 🎉":fmt(P.gap),sub:done?"meta batida":"para a meta",color:done?"var(--verde)":"var(--ambar)"},
     {label:"Meses restantes",value:String(P.monthsLeft||"—"),sub:"de aporte até dez",color:"var(--ink)"},
     {label:"Aporte por mês",value:done?"—":fmt(P.mensal),sub:"mercado estável",color:"var(--roxo)"},
+    {label:"Dividendos Ações — méd. 6m",value:fmt(acao6),sub:"meta R$1.000 · gap "+fmt(Math.max(0,1000-acao6)),color:acao6>=1000?"var(--verde)":"var(--ambar)"},
+    {label:"Dividendos FIIs — méd. 6m",value:fmt(fii6),sub:"meta R$500 · gap "+fmt(Math.max(0,500-fii6)),color:fii6>=500?"var(--verde)":"var(--fiis)"},
   ];
   document.getElementById("metaKpis").innerHTML=kpis.map(k=>`<div class="card kpi"><div class="label">${k.label}</div><div class="value" style="color:${colVar(k.color)}">${k.value}</div><div class="sub">${k.sub}</div></div>`).join("");
+  document.getElementById("metaKpis").style.gridTemplateColumns="repeat(4,1fr)";
   const splitRow=(nm,mes,tot,cor,atual,alvo)=>`<div class="prog"><div class="top"><span><b>${nm}</b> <span style="color:var(--muted)">${fmt(mes)}/mês · total ${fmt(tot)}</span></span><span style="color:var(--muted)">${fmt(atual)} → ${fmt(alvo)}</span></div><div class="mini-bar"><i style="width:${Math.min(100,alvo?100*atual/alvo:0)}%;background:${cor}"></i></div></div>`;
   document.getElementById("metaSplit").innerHTML=
     splitRow("Ações",P.mAcoes,P.gAcoes,colVar("var(--acoes)"),P.acoesAtual,P.acoesAlvo)+
