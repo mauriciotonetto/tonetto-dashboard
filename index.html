@@ -2,7 +2,7 @@
 {
   "name": "Tonetto Holding",
   "schemaVersion": 1,
-  "description": "Painel ao vivo \"TONETTO HOLDING\" no padrão CVENOM, com 6 abas. Relê a planilha do Google Drive a cada abertura: Carteira (5 KPIs + 5 mini-cards de alocação + donut + setores + evolução patrimonial), FIIs e Ações (tabelas com preço/PM/rent/M.S. e filtros), Proventos (independência financeira, evolução anual, últimos 12 meses, projeções 17% a.a., histórico mensal), Pontos de Atenção (alertas automáticos por M.S. e setor) e Aportes (ativos com M.S.>0). Retrato de 21/05/2026 embutido como fallback.",
+  "description": "Painel ao vivo \"TONETTO HOLDING\" no padrão CVENOM, com 6 abas. Relê a planilha do Google Drive a cada abertura: Carteira (5 KPIs + 5 mini-cards de alocação + donut + setores + evolução patrimonial), FIIs e Ações (tabelas com preço/PM/rent/M.S. e filtros), Proventos (KPIs, projeções 17% a.a., histórico mensal), Pontos de Atenção (alertas automáticos por M.S. e setor) e Aportes (ativos com M.S.>0). Retrato de 21/05/2026 embutido como fallback.",
   "mcpTools": [
     "mcp__fcfb38a8-9339-4ca8-b68b-70783af4a15e__read_file_content"
   ],
@@ -233,11 +233,6 @@
   <!-- ABA PROVENTOS -->
   <section data-panel="proventos" class="hide">
     <div class="grid" id="provKpis" style="grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px"></div>
-    <div class="card" style="margin-bottom:16px"><div class="panel-h">Independência Financeira <span class="hint" id="metaHint"></span></div><div id="indep"></div></div>
-    <div class="grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
-      <div class="card"><div class="panel-h">Evolução Anual de Proventos</div><div class="chart-box sm"><canvas id="provAno"></canvas></div></div>
-      <div class="card"><div class="panel-h">Últimos 12 Meses <span class="hint">Total · Ações · FIIs</span></div><div class="chart-box sm"><canvas id="prov12"></canvas></div></div>
-    </div>
     <div class="sec-title">Projeções Futuras <span style="font-weight:500;color:var(--muted);font-size:12px">~17% a.a.</span></div>
     <div class="grid" id="projCards" style="grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px"></div>
     <div class="card" style="overflow-x:auto"><div class="panel-h">Histórico Mensal Completo</div><table id="provTable"></table></div>
@@ -534,14 +529,14 @@ function render(d){
   renderFiiTable(); renderAcaoTable(); renderFiiCards(); renderAcaoCards();
 
   /* proventos */
-  renderProvKpis(d); renderIndep(d,totFii,totAcao); renderProvTable(d); renderProj(d);
+  renderProvKpis(d); renderProvTable(d); renderProj(d);
 
   /* atenção + aportes + meta */
   renderAlerts(d,acaoSet); renderRealizados(); renderAportes(d); renderMeta2026(d); renderRegistro();
 
   /* charts */
   destroy();
-  drawDonut(d); drawEquity(d); drawProvAno(d); drawProv12(d); drawMetaProj(d); drawAporteCharts(d); drawRealizadosCharts();
+  drawDonut(d); drawEquity(d); drawMetaProj(d); drawAporteCharts(d); drawRealizadosCharts();
 
   /* footnote */
   document.getElementById("footnote").innerHTML="Fonte: planilha \"TONETTO ® HOLDING\" no Google Drive (compartilhada por Caio Venom), relida a cada abertura. "+
@@ -658,16 +653,6 @@ function renderProvKpis(d){
     {label:"Renda Ações — méd. 6m",value:fmt(acao6),sub:"meta "+fmt0(CONFIG.metaIndepAcoes)+" · gap "+fmt(Math.max(0,CONFIG.metaIndepAcoes-acao6)),color:"var(--acoes)"},
   ];
   document.getElementById("provKpis").innerHTML=kpis.map(k=>`<div class="card kpi"><div class="label">${k.label}</div><div class="value" style="color:${colVar(k.color)};font-size:16.5px">${k.value}</div><div class="sub">${k.sub}</div></div>`).join("");
-}
-function renderIndep(d){
-  const fiiMes=avg6(d.prov,"fii"), acaoMes=avg6(d.prov,"acao"), totMes=fiiMes+acaoMes;
-  const bar=(lbl,val,meta,cor)=>{const p=Math.min(100,meta?100*val/meta:0);
-    return `<div class="prog"><div class="top"><span><b>${lbl}</b> <span style="color:var(--muted)">méd. 6m</span></span><span style="color:var(--muted)">${fmt(val)} / ${fmt0(meta)} · ${pct(p)}</span></div><div class="bar"><i style="width:${p}%;background:${cor}"></i></div></div>`;}
-  document.getElementById("metaHint").textContent="média 6m · meta "+fmt0(CONFIG.metaIndepTotal)+"/mês";
-  document.getElementById("indep").innerHTML=
-    bar("Meta Total",totMes,CONFIG.metaIndepTotal,colVar("var(--roxo)"))+
-    bar("Meta FIIs",fiiMes,CONFIG.metaIndepFiis,colVar("var(--fiis)"))+
-    bar("Meta Ações",acaoMes,CONFIG.metaIndepAcoes,colVar("var(--acoes)"));
 }
 function renderProvTable(d){
   const best=(d.prov||[]).reduce((m,p)=>{const t=p.fii+p.acao;return t>m.t?{mes:p.mes,t}:m;},{mes:"",t:0});
@@ -888,23 +873,6 @@ function drawEquity(d){
     data:{labels:d.equity.map(e=>e.mes),datasets:[{label:"Patrimônio",data:d.equity.map(e=>e.valor),
       backgroundColor:d.equity.map((e,i)=>i===last?colVar("var(--verde)"):colVar("var(--barra)")),borderRadius:6,maxBarThickness:70}]},
     options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+fmt(c.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>"R$ "+(v/1000).toLocaleString("pt-BR")+"k"}},x:{grid:{display:false}}}}}));
-}
-function drawProvAno(d){
-  const a=d.provAnos.filter(x=>x.total>0);
-  charts.push(new Chart(document.getElementById("provAno"),{type:"bar",
-    data:{labels:a.map(x=>x.ano),datasets:[
-      {label:"FIIs",data:a.map(x=>x.fii),backgroundColor:colVar("var(--fiis)"),stack:"s",borderRadius:3},
-      {label:"Ações",data:a.map(x=>x.acao),backgroundColor:colVar("var(--acoes)"),stack:"s",borderRadius:3}]},
-    options:{plugins:{legend:{position:"bottom",labels:{boxWidth:11,font:{size:11}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.parsed.y)}`}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>"R$ "+v}}}}}));
-}
-function drawProv12(d){
-  const last=d.prov.slice(-12);
-  charts.push(new Chart(document.getElementById("prov12"),{type:"line",
-    data:{labels:last.map(x=>x.mes),datasets:[
-      {label:"Total",data:last.map(x=>x.fii+x.acao),borderColor:"#F59E0B",backgroundColor:"rgba(245,158,11,.10)",fill:true,tension:.35,pointRadius:3,borderWidth:2},
-      {label:"Ações",data:last.map(x=>x.acao),borderColor:colVar("var(--acoes)"),tension:.35,pointRadius:2,borderWidth:1.5,fill:false},
-      {label:"FIIs",data:last.map(x=>x.fii),borderColor:colVar("var(--fiis)"),tension:.35,pointRadius:2,borderWidth:1.5,fill:false}]},
-    options:{plugins:{legend:{position:"top",labels:{boxWidth:11,font:{size:11}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.parsed.y)}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>"R$ "+v}},x:{grid:{display:false}}}}}));
 }
 function renderProj(d){
   const grid=document.getElementById("projCards"); if(!grid) return;
