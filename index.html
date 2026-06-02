@@ -2,7 +2,7 @@
 {
   "name": "Tonetto Holding",
   "schemaVersion": 1,
-  "description": "Painel ao vivo \"TONETTO HOLDING\" no padrão CVENOM, com 6 abas. Relê a planilha do Google Drive a cada abertura: Carteira (5 KPIs + 5 mini-cards de alocação + donut + setores + evolução patrimonial), FIIs e Ações (tabelas com preço/PM/rent/M.S. e filtros), Proventos (KPIs, projeções 17% a.a., histórico mensal), Pontos de Atenção (alertas automáticos por M.S. e setor) e Aportes (ativos com M.S.>0). Retrato de 21/05/2026 embutido como fallback.",
+  "description": "Painel ao vivo \"TONETTO HOLDING\" no padrão CVENOM, com 6 abas. Relê a planilha do Google Drive a cada abertura: Carteira (5 KPIs + 5 mini-cards de alocação + donut + setores + evolução patrimonial), FIIs e Ações (tabelas com preço/PM/rent/M.S. e filtros), Proventos (KPIs, projeções 17% a.a., histórico mensal), Aportes (ativos com M.S.>0). Retrato de 21/05/2026 embutido como fallback.",
   "mcpTools": [
     "mcp__fcfb38a8-9339-4ca8-b68b-70783af4a15e__read_file_content"
   ],
@@ -90,13 +90,6 @@
   .prog .bar > i{display:block;height:100%;border-radius:7px}
   .mini-bar{height:7px;border-radius:4px;background:#EEF1F5;overflow:hidden;margin-top:5px}
   .mini-bar > i{display:block;height:100%;border-radius:4px}
-  /* alerts */
-  .alert{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border-radius:9px;margin-bottom:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-  .alert .ic{font-size:16px;line-height:1.3}
-  .alert .bd{flex:1}
-  .alert .ti{font-weight:700;font-size:13.5px}
-  .alert .ds{font-size:12.5px;color:var(--muted);margin-top:2px}
-  .alert .pin{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:center}
   .legendrow{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:var(--muted)}
   .legendrow span{display:inline-flex;align-items:center;gap:6px}.legendrow i{width:10px;height:10px;border-radius:3px}
   .cards-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
@@ -120,21 +113,6 @@
   .flag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:6px;border:1px solid;text-transform:uppercase;letter-spacing:.02em}
   .fl-sell{color:#DC2626;border-color:#DC2626;background:#FEF2F2}
   .fl-warn{color:#D97706;border-color:#D97706;background:#FFFBEB}
-  .pa-sec{font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted);margin:22px 0 11px;display:flex;align-items:center;gap:8px}
-  .pa-sec:first-child{margin-top:4px}
-  .pa-sec .pd{width:9px;height:9px;border-radius:50%}
-  .pacard{display:flex;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;overflow:hidden}
-  .pacard .bar{width:4px;flex:none}
-  .pacard .in{padding:13px 16px;display:flex;gap:16px;flex:1}
-  .pacard .lab{font-weight:800;font-size:12.5px;min-width:88px;flex:none}
-  .pacard .ti{font-weight:700;font-size:13.5px}
-  .pacard .mt{font-size:12px;color:var(--muted);margin-top:2px}
-  .pacard .ds{font-size:12.5px;color:#374151;margin-top:8px;line-height:1.5}
-  .pacard.pa-ctx{background:#F4F7FE}.pacard.pa-ctx .bar{background:#2563EB}
-  .pacard.pa-crit{background:#FEF5F4}.pacard.pa-crit .bar{background:#DC2626}
-  .pacard.pa-obs{background:#FFFBF2}.pacard.pa-obs .bar{background:#EA9A0B}
-  .pacard.pa-opp{background:#F4FCF6}.pacard.pa-opp .bar{background:#16A34A}
-  @media(max-width:560px){.pacard .in{flex-direction:column;gap:6px}}
   .aporte-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .aporte-form select,.aporte-form input{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;background:#fff;color:var(--ink)}
   .aporte-form input[type=number]{width:130px}
@@ -170,7 +148,6 @@
     <button data-tab="fiis">FIIs</button>
     <button data-tab="acoes">Ações</button>
     <button data-tab="proventos">Proventos</button>
-    <button data-tab="atencao">Pontos de Atenção</button>
     <button data-tab="aportes">Aportes</button>
     <button data-tab="meta2026">Meta 2026</button>
   </nav>
@@ -238,11 +215,6 @@
     <div class="card" style="overflow-x:auto"><div class="panel-h">Histórico Mensal Completo</div><table id="provTable"></table></div>
   </section>
 
-  <!-- ABA ATENÇÃO -->
-  <section data-panel="atencao" class="hide">
-    <div id="alerts"></div>
-    <p class="note">Pontos gerados automaticamente a partir da planilha (regras de Margem de Segurança, teto e alocação ideal). Não são recomendação de investimento.</p>
-  </section>
 
   <!-- ABA APORTES -->
   <section data-panel="aportes" class="hide">
@@ -532,7 +504,7 @@ function render(d){
   renderProvKpis(d); renderProvTable(d); renderProj(d);
 
   /* atenção + aportes + meta */
-  renderAlerts(d,acaoSet); renderRealizados(); renderAportes(d); renderMeta2026(d); renderRegistro();
+  renderRealizados(); renderAportes(d); renderMeta2026(d); renderRegistro();
 
   /* charts */
   destroy();
@@ -693,56 +665,6 @@ function toggleProvYear(yy){
   document.querySelectorAll("#provTable tr.yr-"+yy).forEach(tr=>{tr.style.display=open?"":"none";});
   const cr=document.querySelector('#provTable tr.prov-year[data-yy="'+yy+'"] .prov-caret');
   if(cr) cr.textContent=open?"▾":"▸";
-}
-function renderAlerts(d,acaoSet){
-  const all=d.fiis.map(x=>({...x,cls:"FII"})).concat(d.acoes.map(x=>({...x,cls:"Ação"})));
-  const totFii=d.fiis.reduce((s,x)=>s+x.valor,0), totAcao=d.acoes.reduce((s,x)=>s+x.valor,0);
-  const money=v=>(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
-  const card=(sev,lab,ti,mt,ds)=>`<div class="pacard pa-${sev}"><div class="bar"></div><div class="in"><div class="lab">${lab}</div><div><div class="ti">${ti}</div><div class="mt">${mt}</div><div class="ds">${ds}</div></div></div></div>`;
-  const sec=(dot,txt)=>`<div class="pa-sec"><span class="pd" style="background:${dot}"></span>${txt}</div>`;
-  let html="";
-  /* Contexto */
-  const fiiPct=d.patrimonio?100*totFii/d.patrimonio:0, acaoPct=d.patrimonio?100*totAcao/d.patrimonio:0;
-  html+=sec("#2563EB","Contexto de carteira");
-  html+=card("ctx","CARTEIRA","Composição atual e desvio do ideal",
-    `Patrimônio ${fmt(d.patrimonio)} · Ações ${pct(acaoPct)} · FIIs ${pct(fiiPct)} · DY ${pct(d.dyHolding)}`,
-    `Carteira concentrada em renda variável: ${pct(acaoPct)} em ações e ${pct(fiiPct)} em FIIs, sem renda fixa nem caixa. A estratégia da planilha mira Ações 55% / FIIs 25%.`);
-  html+=card("ctx","PLANILHA","Preços ao vivo via Google Drive",
-    "Atualiza automaticamente ao abrir",
-    "O painel lê a planilha TONETTO HOLDING no Google Drive. Preços, quantidades e patrimônio são recalculados a cada abertura.");
-  /* Crítico: M.S. < 0 */
-  const crit=all.filter(x=>x.ms<0).sort((a,b)=>a.ms-b.ms);
-  if(crit.length){ html+=sec("#DC2626","Crítico — acima do teto");
-    crit.forEach(x=>{const above=x.teto?(x.preco-x.teto)/x.teto*100:0;
-      html+=card("crit",x.ativo,`${pct(above)} acima do teto — não aportar`,
-        `Cotação R$ ${money(x.preco)} vs Teto R$ ${money(x.teto)} · M.S. ${pct(x.ms)} · ${x.cls}`,
-        `${x.ativo} negocia acima do teto de R$ ${money(x.teto)} e não oferece margem de segurança. A regra da carteira recomenda não aportar e reavaliar a posição.`);});
-  }
-  /* Observação: M.S. 0–3 + setor overweight + classe subpeso */
-  const obs=all.filter(x=>x.ms>=0&&x.ms<=3).sort((a,b)=>a.ms-b.ms);
-  const over=acaoSet.filter(s=>{const id=d.acaoSetorIdeal[s.setor];return id!=null&&s.pct>id+0.5;});
-  const subs=d.alloc.filter(a=>/Renda Fixa|Caixa/.test(a.nome)&&a.atual<a.ideal-0.5);
-  if(obs.length||over.length||subs.length){ html+=sec("#EA9A0B","Observação — monitorar");
-    obs.forEach(x=>html+=card("obs",x.ativo,"Próximo ao teto — cautela",
-      `M.S. ${pct(x.ms)} · Cotação R$ ${money(x.preco)} vs Teto R$ ${money(x.teto)} · ${x.cls}`,
-      `Margem de segurança baixa (${pct(x.ms)}). Pouco espaço até o teto de R$ ${money(x.teto)}; aportar só com cautela e monitorar.`));
-    over.forEach(s=>{const id=d.acaoSetorIdeal[s.setor];
-      html+=card("obs","SETOR "+s.setor,`${s.setor} acima do ideal`,
-        `${pct(s.pct)} atual vs ${pct(id)} ideal · setor de Ações`,
-        `O setor ${s.setor} está acima do peso ideal. Evitar concentrar mais aportes nele até reequilibrar a carteira.`);});
-    subs.forEach(a=>html+=card("obs",a.nome,`${a.nome} abaixo do ideal`,
-      `${pct(a.atual)} atual vs ${pct(a.ideal)} ideal · faltam ${fmt(Math.abs(a.delta))}`,
-      `${a.nome} está abaixo do alvo da planilha (${pct(a.ideal)}). Fora do plano atual de aportar só em Ações e FIIs.`));
-  }
-  /* Oportunidade: M.S. > 15 */
-  const opp=all.filter(x=>x.ms>15).sort((a,b)=>b.ms-a.ms);
-  if(opp.length){ html+=sec("#16A34A","Oportunidade — aportar");
-    opp.forEach(x=>{const below=x.preco?(x.teto-x.preco)/x.preco*100:0;
-      html+=card("opp",x.ativo,`M.S. +${pct(x.ms)} — candidato a aporte`,
-        `Cotação R$ ${money(x.preco)} vs Teto R$ ${money(x.teto)} · ${pct(below)} abaixo do teto · Part. ${pct(x.part)} · ${x.cls}`,
-        `${x.ativo} está entre as maiores folgas até o teto da carteira. Margem de segurança de +${pct(x.ms)} o coloca como prioritário para receber aporte.`);});
-  }
-  document.getElementById("alerts").innerHTML=html;
 }
 function renderAportes(d){
   const P=computePlan(d);
