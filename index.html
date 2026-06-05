@@ -1177,8 +1177,8 @@ function renderDYProjetivo(d){
   const consolEl=document.getElementById("dyConsol"); if(!consolEl)return;
   consolEl.innerHTML=[
     {l:"Renda Total/mês",v:fmt(totalMes),s:"FIIs "+fmt(fiiTotMes)+"/mês · Ações "+fmt(acaoTotMes)+"/mês",c:"var(--roxo)"},
-    {l:"% da Meta R$1.500/mês",v:pct(totalPct),s:pct(fiiPct)+" FIIs · "+pct(acaoPct)+" Ações",c:totalPct>=100?"var(--verde)":"var(--ambar)"},
-    {l:"Gap",v:totalGap<=0?"✓ Meta atingida":fmt(totalGap)+"/mês",s:totalGap<=0?"Independência de renda alcançada":"falta para R$ 1.500/mês",c:totalGap<=0?"var(--verde)":"var(--vermelho)"},
+    {l:"% da Meta R$2.000/mês",v:pct(totalPct),s:pct(fiiPct)+" FIIs · "+pct(acaoPct)+" Ações",c:totalPct>=100?"var(--verde)":"var(--ambar)"},
+    {l:"Gap",v:totalGap<=0?"✓ Meta atingida":fmt(totalGap)+"/mês",s:totalGap<=0?"Meta atingida 🎉":"falta para R$ 2.000/mês",c:totalGap<=0?"var(--verde)":"var(--vermelho)"},
   ].map(k=>`<div class="card" style="padding:28px 24px">
     <div class="label" style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--label);font-weight:600;border-left:3px solid #111827;padding-left:8px">${k.l}</div>
     <div style="color:${colVar(k.c)};font-size:28px;font-weight:800;margin-top:12px;letter-spacing:-.02em;line-height:1.1">${k.v}</div>
