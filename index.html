@@ -272,7 +272,7 @@
 
 <script>
 /* ===== CONFIG (metas não constam da planilha — ajuste aqui) ===== */
-const CONFIG = { metaIndepTotal:1500, metaIndepFiis:700, metaIndepAcoes:800, metaPatrimonio2026:150000, metaAcoesPct:68.75, metaFiisPct:31.25, projGrowth:0.17 };
+const CONFIG = { metaIndepTotal:2000, metaIndepFiis:700, metaIndepAcoes:1300, metaPatrimonio2026:150000, metaAcoesPct:68.75, metaFiisPct:31.25, projGrowth:0.17 };
 const FILE_ID = "1ZbX-wGNM-WR0X1v-u61nF_Zx2pqbE5VOgabY3EZJfmM";
 const DRIVE_TOOL = "mcp__fcfb38a8-9339-4ca8-b68b-70783af4a15e__read_file_content";
 /* leitura ao vivo no GitHub/celular: lê a planilha publicada por link */
@@ -489,7 +489,7 @@ function render(d){
     {label:"Patrimônio Total",value:fmt(d.patrimonio),sub:"TONETTO HOLDING",color:"var(--roxo)"},
     {label:"Ações BR",value:fmt(totAcao),sub:pct(d.patrimonio?100*totAcao/d.patrimonio:0)+" do total",color:"var(--roxo)"},
     {label:"FIIs",value:fmt(totFii),sub:pct(d.patrimonio?100*totFii/d.patrimonio:0)+" do total",color:"var(--roxo)"},
-    {label:"Meta Renda — "+fmt0(CONFIG.metaIndepTotal)+"/mês",value:pct(rendaPct),sub:"faltam "+fmt(rendaFalta)+"/mês",color:rendaPct>=100?"var(--verde)":"var(--ambar)"},
+    {label:"Meta Renda — "+fmt0(CONFIG.metaIndepTotal)+"/mês",value:pct(rendaPct),sub:"faltam "+fmt(rendaFalta)+"/mês · meta mensal",color:rendaPct>=100?"var(--verde)":"var(--ambar)"},
     {label:"Meta 2026 — "+fmt0(CONFIG.metaPatrimonio2026),value:pct(meta2026Pct),sub:"gap "+fmt(gap2026),color:meta2026Pct>=100?"var(--verde)":"var(--ambar)"},
   ];
   document.getElementById("kpis").innerHTML=kpis.map(k=>`<div class="card kpi"><div class="label">${k.label}</div><div class="value" style="color:${colVar(k.color)}">${k.value}</div><div class="sub">${k.sub}</div></div>`).join("");
@@ -1087,7 +1087,7 @@ const DY_DATA = {
 
 /* ===== DY PROJETIVO ===== */
 function renderDYProjetivo(d){
-  const META_FII=500,META_ACAO=1000,META_TOTAL=1500;
+  const META_FII=700,META_ACAO=1300,META_TOTAL=2000;
   const money=v=>(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
 
   /* ── SEÇÃO 1: FII TABLE (dados reais pesquisados) ── */
@@ -1109,7 +1109,7 @@ function renderDYProjetivo(d){
   elFC.innerHTML=[
     {l:"Renda FIIs/mês",v:fmt(fiiTotMes),s:"div/cota × cotas (Investidor10)",c:"var(--fiis)"},
     {l:"Renda FIIs/ano",v:fmt(fiiTotAno),s:"projetado (× 12)",c:"var(--fiis)"},
-    {l:"Meta FIIs",v:"R$ 500/mês",s:"independência de renda",c:"var(--ink)"},
+    {l:"Meta FIIs",v:"R$ 700/mês",s:"meta mensal",c:"var(--ink)"},
     {l:"% Atingido",v:pct(fiiPct),s:"da meta FIIs",c:fiiPct>=100?"var(--verde)":"var(--ambar)"},
     {l:"Gap",v:fiiGap<=0?"✓ Atingida":fmt(fiiGap)+"/mês",s:"falta para a meta",c:fiiGap<=0?"var(--verde)":"var(--vermelho)"},
   ].map(k=>`<div class="card kpi"><div class="label">${k.l}</div><div class="value" style="color:${colVar(k.c)};font-size:17px">${k.v}</div><div class="sub">${k.s}</div></div>`).join("");
@@ -1151,7 +1151,7 @@ function renderDYProjetivo(d){
   elAC.innerHTML=[
     {l:"Renda Ações/mês est.",v:fmt(acaoTotMes),s:"DPA26 × cotas ÷ 12 (Suno/Investidor10)",c:"var(--acoes)"},
     {l:"Renda Ações/ano",v:fmt(acaoTotAno),s:"projetado 2026",c:"var(--acoes)"},
-    {l:"Meta Ações",v:"R$ 1.000/mês",s:"independência de renda",c:"var(--ink)"},
+    {l:"Meta Ações",v:"R$ 1.300/mês",s:"meta mensal",c:"var(--ink)"},
     {l:"% Atingido",v:pct(acaoPct),s:"da meta ações",c:acaoPct>=100?"var(--verde)":"var(--ambar)"},
     {l:"Gap",v:acaoGap<=0?"✓ Atingida":fmt(acaoGap)+"/mês",s:"falta para a meta",c:acaoGap<=0?"var(--verde)":"var(--vermelho)"},
   ].map(k=>`<div class="card kpi"><div class="label">${k.l}</div><div class="value" style="color:${colVar(k.c)};font-size:17px">${k.v}</div><div class="sub">${k.s}</div></div>`).join("");
