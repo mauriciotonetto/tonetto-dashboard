@@ -263,7 +263,7 @@
     <div class="grid" id="dyAcaoCards" style="grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px"></div>
     <div class="card" style="overflow-x:auto;margin-bottom:28px"><table id="dyAcaoTable"></table></div>
     <div class="sec-title">Seção 3 — Consolidado</div>
-    <div class="grid" id="dyConsol" style="grid-template-columns:repeat(3,1fr);gap:20px"></div>
+    <div class="grid" id="dyConsol" style="grid-template-columns:repeat(4,1fr);gap:20px"></div>
     <p class="note" style="margin-top:18px">Dados de Div/cota (FIIs) e DPA26 (Ações) pesquisados em Investidor10, Suno, fiis.com.br e Infomoney em 05/06/2026. DY% = div/cota ÷ preço atual; YoC% = div/cota ÷ PM. AURE3 sem previsão de dividendos em 2026 (alavancagem 5,2× após aquisição AES Brasil, prejuízo R$601mi no 1T26). Valores informativos — não constituem recomendação de investimento.</p>
   </section>
 
@@ -635,13 +635,20 @@ function renderProvKpis(d){
   const t12=d.prov.slice(-12); const media12=t12.length?t12.reduce((s,p)=>s+p.fii+p.acao,0)/t12.length:0;
   const m26=d.prov.filter(p=>/\/26$/.test(p.mes)); const proj2026=m26.length?(m26.reduce((s,p)=>s+p.fii+p.acao,0)/m26.length)*12:media2026*12;
   const fii6=avg6(d.prov,"fii"), acao6=avg6(d.prov,"acao");
+  /* DY Projetivo cruzado: DY_DATA x qtd atual */
+  const dyFiiMes=d.fiis.reduce((s,x)=>s+(DY_DATA.fiis[x.ativo]?.divCota||0)*x.qtd,0);
+  const dyAcaoMes=d.acoes.reduce((s,x)=>s+(DY_DATA.acoes[x.ativo]?.dpa26||0)*x.qtd/12,0);
+  const dyTotalMes=dyFiiMes+dyAcaoMes;
+  const m26r=d.prov.filter(p=>/\/26$/.test(p.mes));
+  const realMedFii=m26r.length?m26r.reduce((s,p)=>s+p.fii,0)/m26r.length:0;
+  const realMedAcao=m26r.length?m26r.reduce((s,p)=>s+p.acao,0)/m26r.length:0;
   const kpis=[
     {label:"Total Histórico",value:fmt(d.proventosTotal),sub:"recebidos desde 2025",color:"var(--roxo)"},
     {label:"Melhor Mês",value:fmt(best.t),sub:best.mes+" 🏆",color:"var(--ink)"},
-    {label:"Média Mensal 2026",value:fmt(media2026),sub:"últ. 12m: "+fmt(media12),color:"var(--ink)"},
-    {label:"Projeção 2026",value:fmt(proj2026),sub:"ritmo de 2026 anualizado",color:"var(--ink)"},
-    {label:"Renda FIIs — méd. 6m",value:fmt(fii6),sub:"meta "+fmt0(CONFIG.metaIndepFiis)+" · gap "+fmt(Math.max(0,CONFIG.metaIndepFiis-fii6)),color:"var(--fiis)"},
-    {label:"Renda Ações — méd. 6m",value:fmt(acao6),sub:"meta "+fmt0(CONFIG.metaIndepAcoes)+" · gap "+fmt(Math.max(0,CONFIG.metaIndepAcoes-acao6)),color:"var(--acoes)"},
+    {label:"Média Real 2026",value:fmt(media2026),sub:"real recebido · "+m26r.length+"m registrados",color:"var(--ink)"},
+    {label:"DY Projetivo/mês",value:fmt(dyTotalMes),sub:"FIIs "+fmt(dyFiiMes)+" · Ações "+fmt(dyAcaoMes),color:"var(--roxo)"},
+    {label:"Renda FIIs — méd. real",value:fmt(realMedFii),sub:"projetado "+fmt(dyFiiMes)+" · gap "+fmt(Math.max(0,dyFiiMes-realMedFii)),color:"var(--fiis)"},
+    {label:"Renda Ações — méd. real",value:fmt(realMedAcao),sub:"projetado "+fmt(dyAcaoMes)+" · gap "+fmt(Math.max(0,dyAcaoMes-realMedAcao)),color:"var(--acoes)"},
   ];
   document.getElementById("provKpis").innerHTML=kpis.map(k=>`<div class="card kpi"><div class="label">${k.label}</div><div class="value" style="color:${colVar(k.color)};font-size:16.5px">${k.value}</div><div class="sub">${k.sub}</div></div>`).join("");
 }
@@ -1175,8 +1182,14 @@ function renderDYProjetivo(d){
   const totalPct=Math.min(100,META_TOTAL?100*totalMes/META_TOTAL:0);
   const totalGap=Math.max(0,META_TOTAL-totalMes);
   const consolEl=document.getElementById("dyConsol"); if(!consolEl)return;
+  const prov26r=d.prov.filter(p=>/\/26$/.test(p.mes));
+  const medRealMes=prov26r.length?prov26r.reduce((s,p)=>s+p.fii+p.acao,0)/prov26r.length:0;
+  const medRealFii=prov26r.length?prov26r.reduce((s,p)=>s+p.fii,0)/prov26r.length:0;
+  const medRealAcao=prov26r.length?prov26r.reduce((s,p)=>s+p.acao,0)/prov26r.length:0;
+  const gapRealProj=totalMes-medRealMes;
   consolEl.innerHTML=[
-    {l:"Renda Total/mês",v:fmt(totalMes),s:"FIIs "+fmt(fiiTotMes)+"/mês · Ações "+fmt(acaoTotMes)+"/mês",c:"var(--roxo)"},
+    {l:"DY Projetivo/mês",v:fmt(totalMes),s:"FIIs "+fmt(fiiTotMes)+" · Ações "+fmt(acaoTotMes),c:"var(--roxo)"},
+    {l:"Média Real 2026",v:fmt(medRealMes),s:"FIIs "+fmt(medRealFii)+" · Ações "+fmt(medRealAcao)+" · "+prov26r.length+"m",c:"var(--ink)"},
     {l:"% da Meta R$2.000/mês",v:pct(totalPct),s:pct(fiiPct)+" FIIs · "+pct(acaoPct)+" Ações",c:totalPct>=100?"var(--verde)":"var(--ambar)"},
     {l:"Gap",v:totalGap<=0?"✓ Meta atingida":fmt(totalGap)+"/mês",s:totalGap<=0?"Meta atingida 🎉":"falta para R$ 2.000/mês",c:totalGap<=0?"var(--verde)":"var(--vermelho)"},
   ].map(k=>`<div class="card" style="padding:28px 24px">
