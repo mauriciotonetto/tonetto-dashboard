@@ -1098,7 +1098,7 @@ function renderDYProjetivo(d){
     const yocMes=dd.yocMens||0;
     const rendaMes=divcota*x.qtd;
     return {ativo:x.ativo,qtd:x.qtd,divcota,dyMes,yocMes,dpa12:divcota*12,rendaMes,rendaAno:rendaMes*12,fonte:dd.fonte||"—"};
-  });
+  }).sort((a,b)=>b.rendaMes-a.rendaMes);
   const fiiTotMes=fiiRows.reduce((s,x)=>s+x.rendaMes,0);
   const fiiTotAno=fiiRows.reduce((s,x)=>s+x.rendaAno,0);
 
@@ -1140,7 +1140,7 @@ function renderDYProjetivo(d){
     const proxV=dd.proximoValor?`R$ ${money(dd.proximoValor)}`:"—";
     const proxLabel=prox!=="—"&&dd.proximoValor?`${prox} · ${proxV}`:prox;
     return {ativo:x.ativo,qtd:x.qtd,dpa26,dy26,yoc26,rendaAno,freq:dd.freq||"—",proxLabel,fonte:dd.fonte||"—"};
-  });
+  }).sort((a,b)=>b.rendaAno-a.rendaAno);
   const acaoTotAno=acaoRows.reduce((s,x)=>s+x.rendaAno,0);
   const acaoTotMes=acaoTotAno/12;
 
