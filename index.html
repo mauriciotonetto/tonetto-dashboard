@@ -1250,6 +1250,32 @@ function setDate(){const now=new Date();
 function setSrc(live){document.getElementById("srcdot").className="dot"+(live?" live":"");}
 function extractText(res){if(res==null)return"";if(typeof res==="string")return res;if(res.fileContent)return res.fileContent;if(res.content&&Array.isArray(res.content))return res.content.map(c=>c.text||"").join("\n");if(res.text)return res.text;try{return JSON.stringify(res)}catch(e){return""}}
 function showErr(m){const e=document.getElementById("err");e.textContent=m;e.style.display="block";}
+
+/* ===== RECOVERY: restaura aportes perdidos se vazio ===== */
+(function(){
+  const KEY="tonetto_aportes_v1";
+  try{
+    const existing=JSON.parse(localStorage.getItem(KEY)||"[]");
+    if(existing.length>0) return; // já tem dados, não sobrescreve
+    const recovered=[
+      /* AÇÕES Jun/26 — DUC × VUC da planilha */
+      {id:1749081001,mes:"Jun/26",mesIdx:5,classe:"Ações",ativo:"BBAS3",valor:2985.16},
+      {id:1749081002,mes:"Jun/26",mesIdx:5,classe:"Ações",ativo:"TAEE11",valor:3030.30},
+      {id:1749081003,mes:"Jun/26",mesIdx:5,classe:"Ações",ativo:"ISAE4",valor:2694.00},
+      {id:1749081004,mes:"Jun/26",mesIdx:5,classe:"Ações",ativo:"ITUB4",valor:2674.44},
+      {id:1749081005,mes:"Jun/26",mesIdx:5,classe:"Ações",ativo:"BBSE3",valor:174.80},
+      /* FIIs Jun/26 — DUC × VUC da planilha */
+      {id:1749081006,mes:"Jun/26",mesIdx:5,classe:"FIIs",ativo:"RBRR11",valor:917.95},
+      {id:1749081007,mes:"Jun/26",mesIdx:5,classe:"FIIs",ativo:"TRXF11",valor:997.04},
+      {id:1749081008,mes:"Jun/26",mesIdx:5,classe:"FIIs",ativo:"HGCR11",valor:381.52},
+      {id:1749081009,mes:"Jun/26",mesIdx:5,classe:"FIIs",ativo:"RECR11",valor:330.44},
+      {id:1749081010,mes:"Jun/26",mesIdx:5,classe:"FIIs",ativo:"XPML11",valor:319.26},
+      {id:1749081011,mes:"Jun/26",mesIdx:5,classe:"FIIs",ativo:"VGIR11",valor:48.35},
+    ];
+    localStorage.setItem(KEY,JSON.stringify(recovered));
+    console.log("[RECOVERY] "+recovered.length+" aportes restaurados — total R$14.553,26");
+  }catch(e){}
+})();
 async function boot(){
   setDate(); setupTabs(); setupRegistro(); render(SNAPSHOT); setSrc(false);
   if(window.cowork&&window.cowork.callMcpTool){
